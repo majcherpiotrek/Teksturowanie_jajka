@@ -259,34 +259,174 @@ void calculateNormalVector(int i, point3& normalVector, GLfloat u, GLfloat v){
     }
 }
 
-void flatTriangle(GLfloat a){
-    /*Tworzenie siatki dziedziny parametrycznej*/
-    point3  triangle[3];
-    triangle[0][0] = -a/2;
-    triangle[0][1] = -a/2;
-    triangle[0][2] = 0;
+void Ostroslup(GLfloat a){
 
-    triangle[1][0] = a/2;
-    triangle[1][1] = -a/2;
-    triangle[1][2] = 0;
+    point3 tr1[3];
+    point3 tr2[3];
+    point3 tr3[3];
+    point3 tr4[3];
+    point3 tr5[3];
+    point3 tr6[3];
 
-    triangle[2][0] = 0;
-    triangle[2][1] = a/2;
-    triangle[2][2] = 0;
+    //podstawa
+    //piewszy tojkat
+    tr1[0][0] = -a/2;
+    tr1[0][1] = 0;
+    tr1[0][2] = 0;
+
+    tr1[1][0] = a/2;
+    tr1[1][1] = 0;
+    tr1[1][2] = 0;
+
+    tr1[2][0] = -a/2;
+    tr1[2][1] = 0;
+    tr1[2][2] = a;
+
+    //drugi trojkat
+    tr2[0][0] = a/2;
+    tr2[0][1] = 0;
+    tr2[0][2] = 0;
+
+    tr2[1][0] = a/2;
+    tr2[1][1] = 0;
+    tr2[1][2] = a;
+
+    tr2[2][0] = -a/2;
+    tr2[2][1] = 0;
+    tr2[2][2] = a;
+
+    //ściana tylna
+    tr3[0][0] = -a/2;
+    tr3[0][1] = 0;
+    tr3[0][2] = 0;
+
+    tr3[1][0] = a/2;
+    tr3[1][1] = 0;
+    tr3[1][2] = 0;
+
+    tr3[2][0] = 0;
+    tr3[2][1] = a/2;
+    tr3[2][2] = a/2;
+
+    //ściana przednia
+    tr4[0][0] = -a/2;
+    tr4[0][1] = 0;
+    tr4[0][2] = a;
+
+    tr4[1][0] = a/2;
+    tr4[1][1] = 0;
+    tr4[1][2] = a;
+
+    tr4[2][0] = 0;
+    tr4[2][1] = a/2;
+    tr4[2][2] = a/2;
+
+    //ściana prawa
+    tr5[0][0] = a/2;
+    tr5[0][1] = 0;
+    tr5[0][2] = 0;
+
+    tr5[1][0] = a/2;
+    tr5[1][1] = 0;
+    tr5[1][2] = a;
+
+    tr5[2][0] = 0;
+    tr5[2][1] = a/2;
+    tr5[2][2] = a/2;
+
+    //ściana lewa
+    tr6[0][0] = -a/2;
+    tr6[0][1] = 0;
+    tr6[0][2] = 0;
+
+    tr6[1][0] = -a/2;
+    tr6[1][1] = 0;
+    tr6[1][2] = a;
+
+    tr6[2][0] = 0;
+    tr6[2][1] = a/2;
+    tr6[2][2] = a/2;
 
 
-   glBegin(GL_TRIANGLES);
-        glNormal3f(0.0f, 0.0f, 1.0f);
+
+    glBegin(GL_TRIANGLES);
+        glNormal3f(0.0f, -1.0f, 0.0f);
         glTexCoord2f(0.0f, 0.0f);
-        glVertex3fv(triangle[0]);
+        glVertex3fv(tr1[0]);
 
-        glNormal3f(0.0f, 0.0f, 1.0f);
+        glNormal3f(0.0f, -1.0f, 1.0f);
         glTexCoord2f(1.0f, 0.0f);
-        glVertex3fv(triangle[1]);
+        glVertex3fv(tr1[1]);
 
-        glNormal3f(0.0f, 0.0f, 1.0f);
+        glNormal3f(0.0f, -1.0f, 1.0f);
+        glTexCoord2f(0.0f, 1.0f);
+        glVertex3fv(tr1[2]);
+    glEnd();
+    glBegin(GL_TRIANGLES);
+        glNormal3f(0.0f, -1.0f, 1.0f);
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3fv(tr2[0]);
+
+        glNormal3f(0.0f, -1.0f, 1.0f);
+        glTexCoord2f(1.0f, 1.0f);
+        glVertex3fv(tr2[1]);
+
+        glNormal3f(0.0f, -1.0f, 1.0f);
+        glTexCoord2f(0.0f, 1.0f);
+        glVertex3fv(tr2[2]);
+
+    glEnd();
+    glBegin(GL_TRIANGLES);
+        glNormal3f(0.0f, (float)sqrt(2), -(float)sqrt(2));
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3fv(tr3[1]);
+
+        glNormal3f(0.0f, (float)sqrt(2), -(float)sqrt(2));
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3fv(tr3[0]);
+
+        glNormal3f(0.0f, (float)sqrt(2), -(float)sqrt(2));
         glTexCoord2f(0.5f, 1.0f);
-        glVertex3fv(triangle[2]);
+        glVertex3fv(tr3[2]);
+    glEnd();
+    glBegin(GL_TRIANGLES);
+        glNormal3f(0.0f, (float)sqrt(2), (float)sqrt(2));
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3fv(tr4[0]);
+
+        glNormal3f(0.0f, (float)sqrt(2), (float)sqrt(2));
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3fv(tr4[1]);
+
+        glNormal3f(0.0f, (float)sqrt(2), (float)sqrt(2));
+        glTexCoord2f(0.5f, 1.0f);
+        glVertex3fv(tr4[2]);
+    glEnd();
+    glBegin(GL_TRIANGLES);
+        glNormal3f((float)sqrt(2), (float)sqrt(2), 0.0f);
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3fv(tr5[1]);
+
+        glNormal3f((float)sqrt(2), (float)sqrt(2), 0.0f);
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3fv(tr5[0]);
+
+        glNormal3f((float)sqrt(2), (float)sqrt(2), 0.0f);
+        glTexCoord2f(0.5f, 1.0f);
+        glVertex3fv(tr5[2]);
+    glEnd();
+    glBegin(GL_TRIANGLES);
+        glNormal3f(-(float)sqrt(2), (float)sqrt(2), 0.0f);
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3fv(tr6[0]);
+
+        glNormal3f(-(float)sqrt(2), (float)sqrt(2), 0.0f);
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3fv(tr6[1]);
+
+        glNormal3f(-(float)sqrt(2), (float)sqrt(2), 0.0f);
+        glTexCoord2f(0.5f, 1.0f);
+        glVertex3fv(tr6[2]);
     glEnd();
 
 }
@@ -678,7 +818,7 @@ void RenderScene(void)
     std::cout<<std::endl;
     std::cout<<N<<std::endl<<step<<std::endl;
     //Egg(N);
-    flatTriangle(10.0f);
+    Ostroslup(5.0f);
 
     glFlush();
     // Przekazanie poleceń rysujących do wykonania
