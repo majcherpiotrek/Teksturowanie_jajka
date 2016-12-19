@@ -51,6 +51,160 @@ enum Model{
 Model model = POINTS;
 point3** colors;
 
+/*************************************************************************************/
+// Funkcja wczytuje dane obrazu zapisanego w formacie TGA w pliku o nazwie
+// FileName, alokuje pamięć i zwraca wskaźnik (pBits) do bufora w którym
+// umieszczone są dane.
+// Ponadto udostępnia szerokość (ImWidth), wysokość (ImHeight) obrazu
+// tekstury oraz dane opisujące format obrazu według specyfikacji OpenGL
+// (ImComponents) i (ImFormat).
+// Jest to bardzo uproszczona wersja funkcji wczytującej dane z pliku TGA.
+// Działa tylko dla obrazów wykorzystujących 8, 24, or 32 bitowy kolor.
+// Nie obsługuje plików w formacie TGA kodowanych z kompresją RLE.
+/*************************************************************************************/
+
+
+GLbyte *LoadTGAImage(const char *FileName, GLint *ImWidth, GLint *ImHeight, GLint *ImComponents, GLenum *ImFormat)
+{
+
+/*************************************************************************************/
+
+// Struktura dla nagłówka pliku  TGA
+
+
+#pragma pack(1)
+    typedef struct
+    {
+        GLbyte    idlength;
+        GLbyte    colormaptype;
+        GLbyte    datatypecode;
+        unsigned short    colormapstart;
+        unsigned short    colormaplength;
+        unsigned char     colormapdepth;
+        unsigned short    x_orgin;
+        unsigned short    y_orgin;
+        unsigned short    width;
+        unsigned short    height;
+        GLbyte    bitsperpixel;
+        GLbyte    descriptor;
+    }TGAHEADER;
+#pragma pack(8)
+
+    FILE *pFile;
+    TGAHEADER tgaHeader;
+    unsigned long lImageSize;
+    short sDepth;
+    GLbyte    *pbitsperpixel = NULL;
+
+
+/*************************************************************************************/
+
+// Wartości domyślne zwracane w przypadku błędu
+
+    *ImWidth = 0;
+    *ImHeight = 0;
+    *ImFormat = GL_BGR_EXT;
+    *ImComponents = GL_RGB8;
+
+    pFile = fopen(FileName, "rb");
+    if(pFile == NULL)
+        return NULL;
+
+/*************************************************************************************/
+// Przeczytanie nagłówka pliku
+
+
+    fread(&tgaHeader, sizeof(TGAHEADER), 1, pFile);
+
+
+/*************************************************************************************/
+
+// Odczytanie szerokości, wysokości i głębi obrazu
+
+    *ImWidth = tgaHeader.width;
+    *ImHeight = tgaHeader.height;
+    sDepth = tgaHeader.bitsperpixel / 8;
+
+
+/*************************************************************************************/
+// Sprawdzenie, czy głębia spełnia założone warunki (8, 24, lub 32 bity)
+
+    if(tgaHeader.bitsperpixel != 8 && tgaHeader.bitsperpixel != 24 && tgaHeader.bitsperpixel != 32)
+        return NULL;
+
+/*************************************************************************************/
+
+// Obliczenie rozmiaru bufora w pamięci
+
+
+    lImageSize = tgaHeader.width * tgaHeader.height * sDepth;
+
+
+/*************************************************************************************/
+
+// Alokacja pamięci dla danych obrazu
+
+
+    pbitsperpixel = (GLbyte*)malloc(lImageSize * sizeof(GLbyte));
+
+    if(pbitsperpixel == NULL)
+        return NULL;
+
+    if(fread(pbitsperpixel, lImageSize, 1, pFile) != 1)
+    {
+        free(pbitsperpixel);
+        return NULL;
+    }
+
+
+/*************************************************************************************/
+
+// Ustawienie formatu OpenGL
+
+
+    switch(sDepth)
+
+    {
+
+        case 3:
+
+            *ImFormat = GL_BGR_EXT;
+
+            *ImComponents = GL_RGB8;
+
+            break;
+
+        case 4:
+
+            *ImFormat = GL_BGRA_EXT;
+
+            *ImComponents = GL_RGBA8;
+
+            break;
+
+        case 1:
+
+            *ImFormat = GL_LUMINANCE;
+
+            *ImComponents = GL_LUMINANCE8;
+
+            break;
+
+    };
+
+
+
+    fclose(pFile);
+
+
+
+    return pbitsperpixel;
+
+}
+
+/*************************************************************************************/
+
+
 void calculateNormalVector(int i, point3& normalVector, GLfloat u, GLfloat v){
     GLfloat Xu, Xv, Yu, Yv, Zu, Zv;
 
@@ -109,26 +263,29 @@ void flatTriangle(GLfloat a){
     /*Tworzenie siatki dziedziny parametrycznej*/
     point3  triangle[3];
     triangle[0][0] = -a/2;
-    triangle[0][1] = -a*(float)sqrt(3)/4;
+    triangle[0][1] = -a/2;
     triangle[0][2] = 0;
 
     triangle[1][0] = a/2;
-    triangle[1][1] = -a*(float)sqrt(3)/4;
+    triangle[1][1] = -a/2;
     triangle[1][2] = 0;
 
     triangle[2][0] = 0;
-    triangle[2][1] = a*(float)sqrt(3)/4;
+    triangle[2][1] = a/2;
     triangle[2][2] = 0;
 
 
    glBegin(GL_TRIANGLES);
         glNormal3f(0.0f, 0.0f, 1.0f);
+        glTexCoord2f(0.0f, 0.0f);
         glVertex3fv(triangle[0]);
 
         glNormal3f(0.0f, 0.0f, 1.0f);
+        glTexCoord2f(1.0f, 0.0f);
         glVertex3fv(triangle[1]);
 
         glNormal3f(0.0f, 0.0f, 1.0f);
+        glTexCoord2f(0.5f, 1.0f);
         glVertex3fv(triangle[2]);
     glEnd();
 
@@ -587,9 +744,61 @@ void MyInit(void)
 {
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    /*************************************************************************************/
+
+// Zmienne dla obrazu tekstury
+
+
+
+    GLbyte *pBytes;
+    GLint ImWidth, ImHeight, ImComponents;
+    GLenum ImFormat;
 // Kolor czyszczący (wypełnienia okna) ustawiono na czarny
     /*************************************************************************************/
 
+/*************************************************************************************/
+
+// Teksturowanie będzie prowadzone tyko po jednej stronie ściany
+
+    glEnable(GL_CULL_FACE);
+
+/*************************************************************************************/
+
+//  Przeczytanie obrazu tekstury z pliku o nazwie tekstura.tga
+
+    pBytes = LoadTGAImage("D1_t.tga", &ImWidth, &ImHeight, &ImComponents, &ImFormat);
+
+    /*************************************************************************************/
+
+// Zdefiniowanie tekstury 2-D
+
+    glTexImage2D(GL_TEXTURE_2D, 0, ImComponents, ImWidth, ImHeight, 0, ImFormat, GL_UNSIGNED_BYTE, pBytes);
+
+/*************************************************************************************/
+
+// Zwolnienie pamięci
+
+    free(pBytes);
+
+/*************************************************************************************/
+
+// Włączenie mechanizmu teksturowania
+
+    glEnable(GL_TEXTURE_2D);
+
+/*************************************************************************************/
+
+// Ustalenie trybu teksturowania
+
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+/*************************************************************************************/
+
+// Określenie sposobu nakładania tekstur
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 //  Definicja materiału z jakiego zrobiony jest czajnik
 //  i definicja źródła światła
 
