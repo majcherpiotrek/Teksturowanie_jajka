@@ -105,6 +105,35 @@ void calculateNormalVector(int i, point3& normalVector, GLfloat u, GLfloat v){
     }
 }
 
+void flatTriangle(GLfloat a){
+    /*Tworzenie siatki dziedziny parametrycznej*/
+    point3  triangle[3];
+    triangle[0][0] = -a/2;
+    triangle[0][1] = -a*(float)sqrt(3)/4;
+    triangle[0][2] = 0;
+
+    triangle[1][0] = a/2;
+    triangle[1][1] = -a*(float)sqrt(3)/4;
+    triangle[1][2] = 0;
+
+    triangle[2][0] = 0;
+    triangle[2][1] = a*(float)sqrt(3)/4;
+    triangle[2][2] = 0;
+
+
+   glBegin(GL_TRIANGLES);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3fv(triangle[0]);
+
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3fv(triangle[1]);
+
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3fv(triangle[2]);
+    glEnd();
+
+}
+
 void Egg(GLint n)
 {
     /*Tworzenie siatki dziedziny parametrycznej*/
@@ -491,7 +520,8 @@ void RenderScene(void)
     // Narysowanie osi przy pomocy funkcji zdefiniowanej powyżej
     std::cout<<std::endl;
     std::cout<<N<<std::endl<<step<<std::endl;
-    Egg(N);
+    //Egg(N);
+    flatTriangle(10.0f);
 
     glFlush();
     // Przekazanie poleceń rysujących do wykonania
