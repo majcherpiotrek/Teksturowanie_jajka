@@ -386,33 +386,33 @@ void Ostroslup(GLfloat a){
         glVertex3fv(tr3[0]);
 
         glNormal3f(0.0f, (float)sqrt(2), -(float)sqrt(2));
-        glTexCoord2f(0.5f, 1.0f);
+        glTexCoord2f(0.5f, 0.5f);
         glVertex3fv(tr3[2]);
     glEnd();
     glBegin(GL_TRIANGLES);
         glNormal3f(0.0f, (float)sqrt(2), (float)sqrt(2));
-        glTexCoord2f(0.0f, 0.0f);
+        glTexCoord2f(0.0f, 1.0f);
         glVertex3fv(tr4[0]);
 
         glNormal3f(0.0f, (float)sqrt(2), (float)sqrt(2));
-        glTexCoord2f(1.0f, 0.0f);
+        glTexCoord2f(1.0f, 1.0f);
         glVertex3fv(tr4[1]);
 
         glNormal3f(0.0f, (float)sqrt(2), (float)sqrt(2));
-        glTexCoord2f(0.5f, 1.0f);
+        glTexCoord2f(0.5f, 0.5f);
         glVertex3fv(tr4[2]);
     glEnd();
     glBegin(GL_TRIANGLES);
         glNormal3f((float)sqrt(2), (float)sqrt(2), 0.0f);
-        glTexCoord2f(0.0f, 0.0f);
+        glTexCoord2f(1.0f, 0.0f);
         glVertex3fv(tr5[1]);
 
         glNormal3f((float)sqrt(2), (float)sqrt(2), 0.0f);
-        glTexCoord2f(1.0f, 0.0f);
+        glTexCoord2f(1.0f, 1.0f);
         glVertex3fv(tr5[0]);
 
         glNormal3f((float)sqrt(2), (float)sqrt(2), 0.0f);
-        glTexCoord2f(0.5f, 1.0f);
+        glTexCoord2f(0.5f, 0.5f);
         glVertex3fv(tr5[2]);
     glEnd();
     glBegin(GL_TRIANGLES);
@@ -421,11 +421,11 @@ void Ostroslup(GLfloat a){
         glVertex3fv(tr6[0]);
 
         glNormal3f(-(float)sqrt(2), (float)sqrt(2), 0.0f);
-        glTexCoord2f(1.0f, 0.0f);
+        glTexCoord2f(0.0f, 1.0f);
         glVertex3fv(tr6[1]);
 
         glNormal3f(-(float)sqrt(2), (float)sqrt(2), 0.0f);
-        glTexCoord2f(0.5f, 1.0f);
+        glTexCoord2f(0.5f, 0.5f);
         glVertex3fv(tr6[2]);
     glEnd();
 
@@ -452,20 +452,23 @@ void Egg(GLint n)
 
     point3** egg_p = new point3*[n];
     point3** normVec = new point3*[n];
+    point2** tekstury = new point2*[n];
     for(int i = 0; i < n; i++)
     {
         egg_p[i] = new point3[n];
         normVec[i] = new point3[n];
+
         for(int k = 0; k < n; k++)
         {
             calculateNormalVector(i, normVec[i][k], param[i][k][0], param[i][k][1]);
+
             egg_p[i][k][0] = (float)((-90*pow(param[i][k][0], 5) + 225*pow(param[i][k][0], 4) - 270*pow(param[i][k][0], 3) + 180*pow(param[i][k][0],2) - 45*param[i][k][0])*cos(M_PI*param[i][k][1]));
             egg_p[i][k][1] = (float)(160*pow(param[i][k][0], 4) - 320*pow(param[i][k][0], 3) + 160*pow(param[i][k][0], 2));
             egg_p[i][k][2] = (float)((-90*pow(param[i][k][0], 5) + 225*pow(param[i][k][0], 4) - 270*pow(param[i][k][0], 3) + 180*pow(param[i][k][0],2) - 45*param[i][k][0])*sin(M_PI*param[i][k][1]));
         }
     }
 
-    float STEP = 1/n-1;
+
 
     //Przechodzimy przez wszystkie poziomy jajka od dołu do góry
     for (int i = 0; i < n/2; i++) {
@@ -475,12 +478,12 @@ void Egg(GLint n)
 
             glNormal3f(normVec[i][k][0],normVec[i][k][1],normVec[i][k][2]);
             //glColor3f(colors[i][k][0], colors[i][k][1], colors[i][k][2]);
-            glTexCoord2f(i*STEP, k*STEP);
+            glTexCoord2f(param[i][k][0], param[i][k][1]);
             glVertex3f(egg_p[i][k][0], egg_p[i][k][1] - 5.0f, egg_p[i][k][2]);
 
             glNormal3f(normVec[i][k+1][0],normVec[i][k+1][1],normVec[i][k+1][2]);
             //glColor3f(colors[i][k + 1][0], colors[i][k + 1][1], colors[i][k + 1][2]);
-            glTexCoord2f(i*STEP, (k+1)*STEP);
+            glTexCoord2f(param[i][k+1][0], param[i][k+1][1]);
             glVertex3f(egg_p[i][k + 1][0], egg_p[i][k + 1][1] - 5.0f, egg_p[i][k + 1][2]);
 
             if(i==n/2-1)
@@ -488,7 +491,7 @@ void Egg(GLint n)
             else
                 glNormal3f(normVec[i+1][k][0],normVec[i+1][k][1],normVec[i+1][k][2]);
             //glColor3f(colors[i + 1][k][0], colors[i + 1][k][1], colors[i + 1][k][2]);
-            glTexCoord2f((i+1)*STEP, k*STEP);
+            glTexCoord2f(param[i+1][k][0], param[i+1][k][1]);
             glVertex3f(egg_p[i + 1][k][0], egg_p[i + 1][k][1] - 5.0f, egg_p[i + 1][k][2]);
 
             glEnd();
@@ -497,7 +500,7 @@ void Egg(GLint n)
 
             glNormal3f(normVec[i][k+1][0],normVec[i][k+1][1],normVec[i][k+1][2]);
             //glColor3f(colors[i][k + 1][0], colors[i][k + 1][1], colors[i][k + 1][2]);
-            glTexCoord2f(i*STEP, (k+1)*STEP);
+            glTexCoord2f(param[i][k+1][0], param[i][k+1][1]);
             glVertex3f(egg_p[i][k + 1][0], egg_p[i][k + 1][1] - 5.0f, egg_p[i][k + 1][2]);
 
 
@@ -507,7 +510,7 @@ void Egg(GLint n)
             else
                 glNormal3f(normVec[i+1][k+1][0],normVec[i+1][k+1][1],normVec[i+1][k+1][2]);
             //glColor3f(colors[i + 1][k + 1][0], colors[i + 1][k + 1][1], colors[i + 1][k + 1][2]);
-            glTexCoord2f((i+1)*STEP, (k+1)*STEP);
+            glTexCoord2f(param[i+1][k+1][0], param[i+1][k+1][1]);
             glVertex3f(egg_p[i + 1][k + 1][0], egg_p[i + 1][k + 1][1] - 5.0f, egg_p[i + 1][k + 1][2]);
 
 
@@ -516,7 +519,7 @@ void Egg(GLint n)
             else
                 glNormal3f(normVec[i+1][k][0],normVec[i+1][k][1],normVec[i+1][k][2]);
             //glColor3f(colors[i + 1][k][0], colors[i + 1][k][1], colors[i + 1][k][2]);
-            glTexCoord2f((i+1)*STEP, k*STEP);
+            glTexCoord2f(param[i+1][k][0], param[i+1][k][1]);
             glVertex3f(egg_p[i + 1][k][0], egg_p[i + 1][k][1] - 5.0f, egg_p[i + 1][k][2]);
 
             glEnd();
@@ -530,24 +533,29 @@ void Egg(GLint n)
         for (int k = 0; k < n - 1; k++) {
             if(i==n/2){
                 glBegin(GL_TRIANGLES);
-                if(N%2==0)
+                if(N%2==0){
                     glNormal3f(0.0f, 1.0f, 0.0f);
+                   // glTexCoord2f(0.5f, 0.5f);
+                }
+
                 //glColor3f(1.0f, 1.0f, 1.0f);
                 //glColor3f(colors[i][k][0], colors[i][k][1], colors[i][k][2]);
-                glTexCoord2f(1.0f-i*STEP, k*STEP);
+                glTexCoord2f(param[i][k][0], 1.0f-param[i][k][1]);
                 glVertex3f(egg_p[i][k][0], egg_p[i][k][1] - 5.0f, egg_p[i][k][2]);
 
-                if(N%2==0)
+                if(N%2==0){
                     glNormal3f(0.0f, 1.0f, 0.0f);
+                    //glTexCoord2f(0.5f, 0.5f);
+                }
                 //glColor3f(1.0f, 1.0f, 1.0f);
                 //glColor3f(colors[i][k + 1][0], colors[i][k + 1][1], colors[i][k + 1][2]);
-                glTexCoord2f(1.0f-i*STEP, (k+1)*STEP);
+                glTexCoord2f(param[i][k+1][0], 1.0f-param[i][k+1][1]);
                 glVertex3f(egg_p[i][k + 1][0], egg_p[i][k + 1][1] - 5.0f, egg_p[i][k + 1][2]);
 
                 //glColor3f(1.0f, 1.0f, 1.0f);
                 glNormal3f(-normVec[i+1][k][0],-normVec[i+1][k][1],-normVec[i+1][k][2]);
                 //glColor3f(colors[i + 1][k][0], colors[i + 1][k][1], colors[i + 1][k][2]);
-                glTexCoord2f(1.0f-(i+1)*STEP, k*STEP);
+                glTexCoord2f(param[i+1][k][0], 1.0f-param[i+1][k][1]);
                 glVertex3f(egg_p[i + 1][k][0], egg_p[i + 1][k][1] - 5.0f, egg_p[i + 1][k][2]);
                 glEnd();
 
@@ -555,19 +563,19 @@ void Egg(GLint n)
                  if(N%2==0)
                      glNormal3f(0.0f, 1.0f, 0.0f);
                 //glColor3f(colors[i][k + 1][0], colors[i][k + 1][1], colors[i][k + 1][2]);
-                glTexCoord2f(1.0f-i*STEP, (k+1)*STEP);
+                glTexCoord2f(param[i][k+1][0], 1.0f-param[i][k+1][1]);
                 glVertex3f(egg_p[i][k + 1][0], egg_p[i][k + 1][1] - 5.0f, egg_p[i][k + 1][2]);
 
                  //glColor3f(1.0f, 1.0f, 1.0f);
                 glNormal3f(-normVec[i+1][k+1][0],-normVec[i+1][k+1][1],-normVec[i+1][k+1][2]);
                 //glColor3f(colors[i + 1][k + 1][0], colors[i + 1][k + 1][1], colors[i + 1][k + 1][2]);
-                glTexCoord2f(1.0f-(i+1)*STEP, (k+1)*STEP);
+                glTexCoord2f(param[i+1][k+1][0], 1.0f-param[i+1][k+1][1]);
                 glVertex3f(egg_p[i + 1][k + 1][0], egg_p[i + 1][k + 1][1] - 5.0f, egg_p[i + 1][k + 1][2]);
 
                  //glColor3f(1.0f, 1.0f, 1.0f);
                 glNormal3f(-normVec[i+1][k][0],-normVec[i+1][k][1],-normVec[i+1][k][2]);
                 //glColor3f(colors[i + 1][k][0], colors[i + 1][k][1], colors[i + 1][k][2]);
-                glTexCoord2f(1.0f-(i+1)*STEP, k*STEP);
+                glTexCoord2f(param[i+1][k][0], 1.0f-param[i+1][k][1]);
                 glVertex3f(egg_p[i + 1][k][0], egg_p[i + 1][k][1] - 5.0f, egg_p[i + 1][k][2]);
 
                 glEnd();
@@ -578,20 +586,20 @@ void Egg(GLint n)
                 //glColor3f(1.0f, 1.0f, 1.0f);
                  glNormal3f(-normVec[i][k][0],-normVec[i][k][1],-normVec[i][k][2]);
                 //glColor3f(colors[i][k][0], colors[i][k][1], colors[i][k][2]);
-                glTexCoord2f(1.0f-i*STEP, k*STEP);
+                glTexCoord2f(param[i][k][0], 1.0f-param[i][k][1]);
                 glVertex3f(egg_p[i][k][0], egg_p[i][k][1] - 5.0f, egg_p[i][k][2]);
 
                  //glColor3f(1.0f, 1.0f, 1.0f);
 
                 glNormal3f(-normVec[i][k+1][0],-normVec[i][k+1][1],-normVec[i][k+1][2]);
                 //glColor3f(colors[i][k + 1][0], colors[i][k + 1][1], colors[i][k + 1][2]);
-                glTexCoord2f(1.0f-i*STEP, (k+1)*STEP);
+                glTexCoord2f(param[i][k+1][0], 1.0f-param[i][k+1][1]);
                 glVertex3f(egg_p[i][k + 1][0], egg_p[i][k + 1][1] - 5.0f, egg_p[i][k + 1][2]);
 
                 //glColor3f(1.0f, 1.0f, 1.0f);
                 glNormal3f(-normVec[i+1][k][0],-normVec[i+1][k][1],-normVec[i+1][k][2]);
                 //glColor3f(colors[i + 1][k][0], colors[i + 1][k][1], colors[i + 1][k][2]);
-                glTexCoord2f(1.0f-(i+1)*STEP, k*STEP);
+                glTexCoord2f(param[i+1][k][0], 1.0f-param[i+1][k][1]);
                 glVertex3f(egg_p[i + 1][k][0], egg_p[i + 1][k][1] - 5.0f, egg_p[i + 1][k][2]);
                  glEnd();
 
@@ -600,21 +608,21 @@ void Egg(GLint n)
 
                 glNormal3f(-normVec[i][k+1][0],-normVec[i][k+1][1],-normVec[i][k+1][2]);
                 //glColor3f(colors[i][k + 1][0], colors[i][k + 1][1], colors[i][k + 1][2]);
-                glTexCoord2f(1.0f-i*STEP, (k+1)*STEP);
+                glTexCoord2f(param[i][k+1][0], 1.0f-param[i][k+1][1]);
                 glVertex3f(egg_p[i][k + 1][0], egg_p[i][k + 1][1] - 5.0f, egg_p[i][k + 1][2]);
 
 
                 //glColor3f(1.0f, 1.0f, 1.0f);
                 glNormal3f(-normVec[i+1][k+1][0],-normVec[i+1][k+1][1],-normVec[i+1][k+1][2]);
                 //glColor3f(colors[i + 1][k + 1][0], colors[i + 1][k + 1][1], colors[i + 1][k + 1][2]);
-                glTexCoord2f(1.0f-(i+1)*STEP, (k+1)*STEP);
+                glTexCoord2f(param[i+1][k+1][0], 1.0f-param[i+1][k+1][1]);
                 glVertex3f(egg_p[i + 1][k + 1][0], egg_p[i + 1][k + 1][1] - 5.0f, egg_p[i + 1][k + 1][2]);
 
 
                 //glColor3f(1.0f, 1.0f, 1.0f);
                 glNormal3f(-normVec[i+1][k][0],-normVec[i+1][k][1],-normVec[i+1][k][2]);
                 //glColor3f(colors[i + 1][k][0], colors[i + 1][k][1], colors[i + 1][k][2]);
-                glTexCoord2f(1.0f-(i+1)*STEP, k*STEP);
+                glTexCoord2f(param[i+1][k][0], 1.0f-param[i+1][k][1]);
                 glVertex3f(egg_p[i + 1][k][0], egg_p[i + 1][k][1] - 5.0f, egg_p[i + 1][k][2]);
 
                 glEnd();
@@ -1048,7 +1056,7 @@ int main(int argc, char** argv)
 
     glutInitWindowSize(300, 300);
 
-    glutCreateWindow("Obserwator jajka");
+    glutCreateWindow("Tekstury");
 
     glutDisplayFunc(RenderScene);
     // Określenie, że funkcja RenderScene będzie funkcją zwrotną
