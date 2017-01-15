@@ -11,7 +11,6 @@
 typedef float point3[3];
 int step = 0;
 static GLfloat viewer[]= {0.0, 0.0, 10.0};
-static GLfloat R = 10.0;
 static const GLfloat R_min = 2.6;
 static const GLfloat R_max = 23.0;
 
@@ -44,11 +43,12 @@ GLint N = 10;
 
 
 // Funkcja rysująca osie układu współrzędnych
-enum Model{
-    POINTS, NET, TRIANGLES
+enum Obiekt{
+    jajko, ostroslup
 };
 
-Model model = POINTS;
+Obiekt obiekt = ostroslup;
+
 point3** colors;
 
 /*************************************************************************************/
@@ -770,12 +770,23 @@ void RenderScene(void)
     glRotatef(theta, 0.0, 1.0, 0.0);  //obrót obiektu o nowy kąt
     glRotatef(fi, 1.0, 0.0, 0.0);
 
-    Axes();
+    //Axes();
     // Narysowanie osi przy pomocy funkcji zdefiniowanej powyżej
     std::cout<<std::endl;
     std::cout<<N<<std::endl<<step<<std::endl;
-    Egg(N);
-    //Ostroslup(5.0f);
+
+    switch (obiekt){
+        case ostroslup:{
+            Ostroslup(5.0f);
+            break;
+        }
+        case jajko:{
+            Egg(N);
+            break;
+        }
+    }
+
+
 
     glFlush();
     // Przekazanie poleceń rysujących do wykonania
@@ -791,9 +802,12 @@ void RenderScene(void)
 
 void keys(unsigned char key, int x, int y)
 {
-    if(key == 'p') model = POINTS;
-    if(key == 'w') model = NET;
-    if(key == 's') model = TRIANGLES;
+    if(key =='s'){
+        if(obiekt==ostroslup)
+            obiekt = jajko;
+        else
+            obiekt = ostroslup;
+    }
     if(key == '.')step++;
     if(key == ',')step--;
     if(key == '+')
